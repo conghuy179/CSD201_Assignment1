@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -7,13 +8,15 @@ public class Driver {
     public static final int SELECTION_INPUT = 1;
     public static final int SELECTION_OUTPUT = 2;
     public static final int SELECTION_BUBBLE = 3;
-    public static final int SELECTION_SELECTION = 4;
+    public static final int SELECTION_SELECTION_SORT = 4;
     public static final int SELECTION_INSERTION = 5;
     public static final int SELECTION_LINEAR = 6;
     public static final int SELECTION_BINARY = 7;
     public static final int SELECTION_EXIT = 0;
     private Scanner sc;
     private int selection;
+    private ArrayList<String> a;
+    private ArrayList<Integer> b;
 
     public Driver(Scanner sc) {
         this.sc = sc;
@@ -46,26 +49,29 @@ public class Driver {
 
             selection = Integer.parseInt(selectionS);
             if (selection == SELECTION_INPUT) {
-                runInputSelection();
+                runInput();
             } else if (selection == SELECTION_OUTPUT) {
-                runOutputSelection();
+                runOutput();
             } else if (selection == SELECTION_BUBBLE) {
-                runBubbleSortSelection();
+                runBubbleSort();
+            } else if (selection == SELECTION_SELECTION_SORT) {
+                runSelectionSort();
             } else if (selection == SELECTION_INSERTION) {
-                runInsertionSortSelection();
+                runInsertionSort();
             } else if (selection == SELECTION_LINEAR) {
-                runLinearSelection();
+                runLinear();
             } else if (selection == SELECTION_BINARY) {
-                runBinarySelection();
+                runBinary();
             }
         } while (selection != SELECTION_EXIT);
     }
+
 
     /**
      * Nhap du lieu tu ban phim
      * Cho phep nhap do dai mang, nhap tung gia tri cua mang, luu du lieu
      */
-    private void runInputSelection() throws IOException {
+    private void runInput() throws IOException {
         int arrLength = 0;
         String arrLengthS;
         do {
@@ -86,7 +92,7 @@ public class Driver {
                 for (int i = 0; i < arrLength; i++) {
                     System.out.println("Nhap gia tri thu " + (i + 1) + " trong mang: ");
                     arr[i] = sc.nextInt();
-                    writer.write(Integer.toString(arr[i]) + " ");
+                    writer.write((arr[i]) + " ");
                 }
                 System.out.println("Arr = " + Arrays.toString(arr));
                 writer.flush();
@@ -112,37 +118,122 @@ public class Driver {
     }
 
     /**
+     * Ham output:
      * in ra danh sach du lieu duoc doc tu file
      */
-    private void runOutputSelection() {
+    private void runOutput() throws IOException {
+        String temp = null;
         try {
             File input = new File("INPUT.TXT");
             Scanner reader = new Scanner(input);
             while (reader.hasNextLine()) {
-                String a = reader.nextLine();
-                System.out.println(a);
+                temp = reader.nextLine();
             }
+            a = new ArrayList<String>(Arrays.asList(temp.split(" ")));
+            System.out.println(a);
             reader.close();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void runBinarySelection() {
+    /**
+     * Ham sort kieu bubble:
+     * Luu du lieu mang a sang mang b
+     * Thuc hien bubble sort tren mang b
+     * In ra man hinh ket qua tung buoc va luu vao tep
+     * Tu dong in ket qua buoc cuoi cung vao file OUTPUT2.TXT
+     */
+    private void runBubbleSort() throws IOException {
+        int[] b = new int[a.size()];
+        BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT1.TXT"));
+
+        // Luu du lieu tu a sang b
+        for (int i = 0; i < a.size(); i++) {
+            b[i] = Integer.parseInt(a.get(i));
+        }
+
+        // Thuc hien bubble sort tren b
+        // Ket qua sap xep tung buoc se duoc in ra man hinh va luu vao tep
+        for (int i = 0; i < b.length - 1; i++) {
+            for (int j = 0; j < b.length - 1 - i; j++) {
+                if (b[j + 1] < b[j]) {
+                    swap(b, j, j + 1);
+                }
+            }
+            System.out.println(Arrays.toString(b));
+            writer.write(Arrays.toString(b) + "\n");
+        }
+        writer.flush();
+    }
+    private void swap(int[] b, int x, int y) {
+        int swap = b[x];
+        b[x] = b[y];
+        b[y] = swap;
     }
 
-    private void runLinearSelection() {
+    private void runSelectionSort() throws IOException {
+        int[] b = new int[a.size()];
+        BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT2.TXT"));
 
+        // Luu du lieu tu a sang b
+        for (int i = 0; i < a.size(); i++) {
+            b[i] = Integer.parseInt(a.get(i));
+        }
+
+        // Thuc hien selection sort tren b
+        // Ket qua sap xep tung buoc se duoc in ra man hinh va luu vao tep
+        for (int i = 0; i < b.length; i++) {
+            // Tim vi tri co gia tri nho nhat tinh tu i den a.length - 1
+            int tem = i;
+            for (int j = i; j < b.length; j++) {
+                if (b[tem] > b[j]) {
+                    tem = j;
+                }
+            }
+            // doi cho gia tri tai i va gia tri tai vi tri tem
+            swap(b, i, tem);
+            System.out.println(Arrays.toString(b));
+            writer.write(Arrays.toString(b) + "\n");
+        }
+        writer.flush();
     }
 
-    private void runInsertionSortSelection() {
+    private void runInsertionSort() throws IOException {
+        int[] b = new int[a.size()];
+        BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT3.TXT"));
 
+        // Luu du lieu tu a sang b
+        for (int i = 0; i < a.size(); i++) {
+            b[i] = Integer.parseInt(a.get(i));
+        }
+
+        // Thuc hien Insertion sort tren b
+        // Ket qua sap xep tung buoc se duoc in ra man hinh va luu vao tep
+        if (b[0] > b[1]) {
+            swap(b, 0, 1);
+            System.out.println(Arrays.toString(b));
+        }
+
+        for (int i = 2; i < b.length; i++) {
+            for (int j = i; j > 0; j--) {
+                if (b[j] < b[j - 1]) {
+                    swap(b, j, j - 1);
+                }
+            }
+            System.out.println(Arrays.toString(b));
+            writer.write(Arrays.toString(b) + "\n");
+            // doi cho gia tri tai i va gia tri tai vi tri tem
+        }
+        writer.flush();
     }
 
-    private void runBubbleSortSelection() {
-
+    private void runBinary() {
     }
 
+    private void runLinear() {
+
+    }
 
     private boolean isSelectionValid(String selectionS) {
         if (selectionS.length() > 1) {
